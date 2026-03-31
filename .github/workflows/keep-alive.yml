@@ -10,12 +10,8 @@ jobs:
   ping_supabase:
     runs-on: ubuntu-latest
     steps:
-     - name: Send keep-alive request
-  run: |
-    if [ -z "${{ secrets.SUPABASE_URL }}" ]; then
-      echo "Error: SUPABASE_URL secret is not set"
-      exit 1
-    fi
-    curl -X GET "${{ secrets.SUPABASE_URL }}/rest/v1/wallets?select=id&limit=1" \
-    -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
-    -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}"
+      - name: Send keep-alive request
+        run: |
+          curl -X GET "${{ secrets.VITE_SUPABASE_URL }}/rest/v1/wallets?select=id&limit=1" \
+            -H "apikey: ${{ secrets.VITE_SUPABASE_ANON_KEY }}" \
+            -H "Authorization: Bearer ${{ secrets.VITE_SUPABASE_ANON_KEY }}"

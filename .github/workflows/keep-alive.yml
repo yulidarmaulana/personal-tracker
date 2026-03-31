@@ -12,6 +12,6 @@ jobs:
     steps:
       - name: Send keep-alive request
         run: |
-          curl --fail -I -X GET "${{ secrets.PUBLIC_SUPABASE_URL }}/rest/v1/" \
-          -H "apikey: ${{ secrets.PUBLIC_SUPABASE_ANON_KEY }}" \
-          -H "Authorization: Bearer ${{ secrets.PUBLIC_SUPABASE_ANON_KEY }}"
+          curl --fail -I "${{ secrets.VITE_SUPABASE_URL }}" \
+          -H "apikey: ${{ secrets.VITE_SUPABASE_ANON_KEY }}" \
+          -H "Authorization: Bearer ${{ secrets.VITE_SUPABASE_ANON_KEY }}"

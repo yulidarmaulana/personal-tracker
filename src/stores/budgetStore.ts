@@ -65,6 +65,26 @@ export const useBudgetStore = defineStore('budgets', () => {
     }
   }
 
+  async function updateBudget(id: string, budget: Partial<Budget>) {
+    try {
+      const { data, error } = await supabase
+        .from('budgets')
+        .update(budget)
+        .eq('id', id)
+        .select()
+
+      if (error) throw error
+      if (data) {
+        const index = budgets.value.findIndex(b => b.id === id)
+        if (index !== -1) {
+          budgets.value[index] = data[0]
+        }
+      }
+    } catch (error) {
+      console.error('Error updating budget:', error)
+    }
+  }
+
   // Helper to get spending for a category in the current month
   function getSpendingForCategory(categoryName: string) {
     const now = new Date()
@@ -87,6 +107,7 @@ export const useBudgetStore = defineStore('budgets', () => {
     loading,
     fetchBudgets,
     addBudget,
+    updateBudget,
     deleteBudget,
     getSpendingForCategory
   }

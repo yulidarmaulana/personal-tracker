@@ -2,7 +2,7 @@
 import { onMounted, ref, watch } from 'vue'
 import { useWalletStore } from '@/stores/walletStore'
 import { useAuthStore } from '@/stores/authStore'
-import { WalletIcon, PlusIcon, Trash2Icon, PencilIcon } from 'lucide-vue-next'
+import { WalletIcon, PlusCircleIcon, Trash2Icon, PencilIcon } from 'lucide-vue-next'
 import ConfirmModal from '@/components/ConfirmModal.vue'
 
 const walletStore = useWalletStore()
@@ -88,9 +88,9 @@ const formatCurrency = (amount: number) => {
       </div>
       <button 
         @click="isAdding = true"
-        class="flex items-center gap-2 px-6 py-3 bg-emerald-500 text-white font-bold rounded-xl hover:bg-emerald-600 transition-all shadow-lg shadow-emerald-100"
+        class="flex items-center gap-2 px-4 py-2 bg-emerald-400 text-white font-bold rounded-xl hover:bg-emerald-600 transition-all shadow-lg shadow-emerald-100"
       >
-        <PlusIcon :size="20" />
+        <PlusCircleIcon :size="20" />
         <span>New Wallet</span>
       </button>
     </div>
@@ -120,7 +120,7 @@ const formatCurrency = (amount: number) => {
       </div>
       <div class="flex justify-end gap-3 mt-6">
         <button @click="closeForm" class="px-6 py-3 text-gray-500 font-medium hover:text-gray-800 transition-colors">Cancel</button>
-        <button @click="handleAddWallet" class="px-6 py-3 bg-emerald-500 text-white font-bold rounded-xl hover:bg-emerald-600 transition-all">
+        <button @click="handleAddWallet" class="px-8 py-3 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100">
           {{ editingWallet ? 'Update Wallet' : 'Create Wallet' }}
         </button>
       </div>
@@ -161,18 +161,14 @@ const formatCurrency = (amount: number) => {
           </div>
         </div>
         
-        <div class="mt-8">
+        <div class="mt-6">
           <p class="text-xs text-gray-400 uppercase font-bold tracking-wider mb-1">Balance</p>
           <p class="text-3xl font-black text-gray-800">{{ formatCurrency(wallet.balance) }}</p>
         </div>
 
-        <div class="mt-6 flex items-center justify-between">
-          <div class="flex -space-x-2">
-            <div class="w-8 h-8 rounded-full bg-indigo-50 border-2 border-white"></div>
-            <div class="w-8 h-8 rounded-full bg-emerald-50 border-2 border-white"></div>
-          </div>
-          <span class="text-xs font-medium text-gray-400 italic">Updated just now</span>
-        </div>
+        <!-- <div class="mt-6 flex items-center justify-between">
+          <span class="text-xs font-medium text-gray-400 italic"></span>
+        </div> -->
       </div>
 
       <div 

@@ -71,6 +71,26 @@ export const useGoalStore = defineStore('goals', () => {
     }
   }
 
+  async function updateGoal(id: string, updates: Partial<Goal>) {
+    try {
+      const { data, error } = await supabase
+        .from('goals')
+        .update(updates)
+        .eq('id', id)
+        .select()
+
+      if (error) throw error
+      if (data) {
+        const index = goals.value.findIndex(g => g.id === id)
+        if (index !== -1) {
+          goals.value[index] = data[0]
+        }
+      }
+    } catch (error) {
+      console.error('Error updating goal:', error)
+    }
+  }
+
   async function deleteGoal(id: string) {
     try {
       const { error } = await supabase
@@ -91,6 +111,7 @@ export const useGoalStore = defineStore('goals', () => {
     fetchGoals,
     addGoal,
     updateGoalProgress,
+    updateGoal,
     deleteGoal
   }
 })

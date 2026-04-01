@@ -1,13 +1,14 @@
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, watch, reactive } from 'vue'
 import { useGoalStore } from '@/stores/goalStore'
 import { useAuthStore } from '@/stores/authStore'
 import { 
   TrophyIcon, 
-  PlusIcon, 
   Trash2Icon, 
   CalendarIcon,
-  TargetIcon
+  TargetIcon,
+  PlusCircleIcon,
+  MinusCircleIcon
 } from 'lucide-vue-next'
 import ConfirmModal from '@/components/ConfirmModal.vue'
 
@@ -17,7 +18,7 @@ const authStore = useAuthStore()
 const isAdding = ref(false)
 const isDeleteModalOpen = ref(false)
 const goalToDelete = ref<string | null>(null)
-const newGoal = ref({
+const newGoal = reactive({
   name: '',
   target_amount: 0,
   deadline: ''
@@ -34,16 +35,18 @@ watch(() => authStore.user, (user) => {
 })
 
 const handleAddGoal = async () => {
-  if (!newGoal.value.name.trim() || newGoal.value.target_amount <= 0) return
+  if (!newGoal.name.trim() || newGoal.target_amount <= 0) return
   
   await goalStore.addGoal({
-    name: newGoal.value.name,
-    target_amount: newGoal.value.target_amount,
+    name: newGoal.name,
+    target_amount: newGoal.target_amount,
     current_amount: 0,
-    deadline: newGoal.value.deadline || null
+    deadline: newGoal.deadline || null
   })
   
-  newGoal.value = { name: '', target_amount: 0, deadline: '' }
+  newGoal.name = ''
+  newGoal.target_amount = 0
+  newGoal.deadline = ''
   isAdding.value = false
 }
 
@@ -87,17 +90,17 @@ const cancelDelete = () => {
 </script>
 
 <template>
-  <div class="p-6 max-w-5xl mx-auto space-y-8">
+  <div class="p-6 mx-auto space-y-8">
     <div class="flex justify-between items-center">
       <div>
-        <h1 class="text-2xl font-bold text-gray-800">Savings Goals</h1>
+        <h6 class="text-2xl font-bold text-gray-800">Goals</h6>
         <p class="text-sm text-gray-500 mt-1">Plan and track your future dreams</p>
       </div>
       <button 
         @click="isAdding = !isAdding"
-        class="flex items-center gap-2 px-5 py-2.5 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100"
+        class="flex items-center gap-2 px-4 py-2 bg-emerald-400 text-white font-bold rounded-xl hover:bg-emerald-500 transition-all shadow-lg shadow-emerald-100"
       >
-        <PlusIcon :size="20" />
+        <component :is="isAdding ? MinusCircleIcon : PlusCircleIcon" :size="20" />
         <span>{{ isAdding ? 'Cancel' : 'Add New Goal' }}</span>
       </button>
     </div>
@@ -131,7 +134,8 @@ const cancelDelete = () => {
           <input 
             v-model="newGoal.deadline"
             type="date" 
-            class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
+            class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition-all cursor-pointer"
+            onclick="this.showPicker()"
           />
         </div>
       </div>

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
   import { 
-    HomeIcon, 
+    LayoutGridIcon, 
     WalletIcon, 
     ChartLineIcon, 
     PlusIcon, 
@@ -28,6 +28,16 @@ import { ref, onMounted, computed } from 'vue'
   const walletStore = useWalletStore()
 
   const showNavigation = computed(() => !route.meta.public)
+
+  const navItems = [
+    { to: '/', label: 'Dashboard', icon: LayoutGridIcon },
+    { to: '/wallet', label: 'Wallet', icon: WalletIcon },
+    { to: '/transactions', label: 'Transactions', icon: ListIcon },
+    { to: '/categories', label: 'Categories', icon: TagIcon },
+    { to: '/budgets', label: 'Budgets', icon: TargetIcon },
+    { to: '/goals', label: 'Goals', icon: TrophyIcon },
+    { to: '/report', label: 'Report', icon: ChartLineIcon },
+  ]
 
   onMounted(async () => {
     const { data: { session } } = await supabase.auth.getSession()
@@ -77,99 +87,30 @@ import { ref, onMounted, computed } from 'vue'
         </div>
       </div>
 
+      
       <!-- Navigation Menu -->
       <nav class="flex-1 px-4 space-y-2 mt-4">
         <router-link
-          to="/"
+          v-for="item in navItems"
+          :key="item.to"
+          :to="item.to"
+          :title="item.label"
           active-class="bg-indigo-50 text-indigo-700 font-bold"
           :class="[
-            'flex items-center text-sm font-medium rounded-xl transition-all duration-200 text-gray-500 hover:bg-gray-50 hover:text-gray-900',
+            'flex items-center text-sm rounded-xl transition-all duration-200 text-gray-500 hover:bg-indigo-100 hover:text-indigo-700',
             isCollapsed ? 'justify-center p-3' : 'px-4 py-3'
           ]"
-          title="Dashboard"
         >
-          <HomeIcon :size="20" :class="!isCollapsed ? 'mr-3' : ''" />
-          <span v-if="!isCollapsed">Dashboard</span>
-        </router-link>
-
-        <router-link
-          to="/wallet"
-          active-class="bg-indigo-50 text-indigo-700 font-bold"
-          :class="[
-            'flex items-center text-sm font-medium rounded-xl transition-all duration-200 text-gray-500 hover:bg-gray-50 hover:text-gray-900',
-            isCollapsed ? 'justify-center p-3' : 'px-4 py-3'
-          ]"
-          title="Wallet"
-        >
-          <WalletIcon :size="20" :class="!isCollapsed ? 'mr-3' : ''" />
-          <span v-if="!isCollapsed">Wallet</span>
-        </router-link>
-
-        <router-link
-          to="/transactions"
-          active-class="bg-indigo-50 text-indigo-700 font-bold"
-          :class="[
-            'flex items-center text-sm font-medium rounded-xl transition-all duration-200 text-gray-500 hover:bg-gray-50 hover:text-gray-900',
-            isCollapsed ? 'justify-center p-3' : 'px-4 py-3'
-          ]"
-          title="Transactions"
-        >
-          <ListIcon :size="20" :class="!isCollapsed ? 'mr-3' : ''" />
-          <span v-if="!isCollapsed">Transactions</span>
-        </router-link>
-
-        <router-link
-          to="/categories"
-          active-class="bg-indigo-50 text-indigo-700 font-bold"
-          :class="[
-            'flex items-center text-sm font-medium rounded-xl transition-all duration-200 text-gray-500 hover:bg-gray-50 hover:text-gray-900',
-            isCollapsed ? 'justify-center p-3' : 'px-4 py-3'
-          ]"
-          title="Categories"
-        >
-          <TagIcon :size="20" :class="!isCollapsed ? 'mr-3' : ''" />
-          <span v-if="!isCollapsed">Categories</span>
-        </router-link>
-
-        <router-link
-          to="/budgets"
-          active-class="bg-indigo-50 text-indigo-700 font-bold"
-          :class="[
-            'flex items-center text-sm font-medium rounded-xl transition-all duration-200 text-gray-500 hover:bg-gray-50 hover:text-gray-900',
-            isCollapsed ? 'justify-center p-3' : 'px-4 py-3'
-          ]"
-          title="Budgets"
-        >
-          <TargetIcon :size="20" :class="!isCollapsed ? 'mr-3' : ''" />
-          <span v-if="!isCollapsed">Budgets</span>
-        </router-link>
-
-        <router-link
-          to="/goals"
-          active-class="bg-indigo-50 text-indigo-700 font-bold"
-          :class="[
-            'flex items-center text-sm font-medium rounded-xl transition-all duration-200 text-gray-500 hover:bg-gray-50 hover:text-gray-900',
-            isCollapsed ? 'justify-center p-3' : 'px-4 py-3'
-          ]"
-          title="Goals"
-        >
-          <TrophyIcon :size="20" :class="!isCollapsed ? 'mr-3' : ''" />
-          <span v-if="!isCollapsed">Goals</span>
-        </router-link>
-
-        <router-link
-          to="/report"
-          active-class="bg-indigo-50 text-indigo-700 font-bold"
-          :class="[
-            'flex items-center text-sm font-medium rounded-xl transition-all duration-200 text-gray-500 hover:bg-gray-50 hover:text-gray-900',
-            isCollapsed ? 'justify-center p-3' : 'px-4 py-3'
-          ]"
-          title="Report"
-        >
-          <ChartLineIcon :size="20" :class="!isCollapsed ? 'mr-3' : ''" />
-          <span v-if="!isCollapsed">Report</span>
+          <component
+            :is="item.icon"
+            :size="20"
+            :class="!isCollapsed ? 'mr-3' : ''"
+            class="text-slate-900"
+          />
+          <span v-if="!isCollapsed" class="text-slate-900 font-semibold">{{ item.label }}</span>
         </router-link>
       </nav>
+     
 
       <!-- Sidebar Footer (Add Button & Profile) -->
       <div class="p-4 border-t border-gray-100">

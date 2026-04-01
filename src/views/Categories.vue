@@ -5,10 +5,11 @@ import { useCategoryStore } from '@/stores/categoryStore'
 import { useAuthStore } from '@/stores/authStore'
 import { 
   TagIcon, 
-  PlusIcon, 
   Trash2Icon, 
   ChevronDownIcon, 
-  ChevronUpIcon 
+  ChevronUpIcon,
+  PlusCircleIcon,
+  MinusCircleIcon,
 } from 'lucide-vue-next'
 import ConfirmModal from '@/components/ConfirmModal.vue' // Added import
 
@@ -69,9 +70,9 @@ const cancelDelete = () => {
       </div>
       <button 
         @click="isAdding = !isAdding"
-        class="flex items-center gap-2 px-5 py-2.5 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100"
+        class="flex items-center gap-2 px-4 py-2 bg-emerald-400 text-white font-bold rounded-xl hover:bg-emerald-500 transition-all shadow-lg shadow-emerald-100"
       >
-        <PlusIcon :size="20" />
+        <component :is="isAdding ? MinusCircleIcon : PlusCircleIcon" :size="20" />
         <span>{{ isAdding ? 'Cancel' : 'New Category' }}</span>
       </button>
     </div>

@@ -7,11 +7,12 @@ import { useAuthStore } from '@/stores/authStore'
 import { 
   TargetIcon, 
   Trash2Icon, 
-  MinusIcon,
+  PencilIcon,
   AlertCircleIcon,
   CheckCircle2Icon,
   WalletIcon,
-  PlusCircleIcon
+  PlusCircleIcon,
+  MinusCircleIcon
 } from 'lucide-vue-next'
 import ConfirmModal from '@/components/ConfirmModal.vue'
 
@@ -23,6 +24,7 @@ const authStore = useAuthStore()
 const isAdding = ref(false)
 const isDeleteModalOpen = ref(false)
 const budgetToDelete = ref<string | null>(null)
+const editingId = ref<string | null>(null)
 const newBudgetAmount = ref(0)
 const newBudgetCategory = ref('')
 
@@ -51,14 +53,35 @@ const expenseCategories = computed(() => {
 const handleAddBudget = async () => {
   if (!newBudgetCategory.value || newBudgetAmount.value <= 0) return
   
-  await budgetStore.addBudget({
-    category_id: newBudgetCategory.value,
-    amount: newBudgetAmount.value,
-    period: 'monthly'
-  })
+  if (editingId.value) {
+    // Update Mode
+    await budgetStore.updateBudget(editingId.value, {
+      category_id: newBudgetCategory.value,
+      amount: newBudgetAmount.value
+    })
+  } else {
+    // Add Mode
+    await budgetStore.addBudget({
+      category_id: newBudgetCategory.value,
+      amount: newBudgetAmount.value,
+      period: 'monthly'
+    })
+  }
   
+  resetForm()
+}
+
+const handleEditClick = (budget: any) => {
+  editingId.value = budget.id
+  newBudgetCategory.value = budget.category_id
+  newBudgetAmount.value = budget.amount
+  isAdding.value = true
+}
+
+const resetForm = () => {
   newBudgetAmount.value = 0
   newBudgetCategory.value = ''
+  editingId.value = null
   isAdding.value = false
 }
 
@@ -103,23 +126,24 @@ const formatCurrency = (amount: number) => {
 </script>
 
 <template>
-  <div class="p-6 max-w-5xl mx-auto space-y-8">
+  <div class="p-6 mx-auto space-y-8">
     <div class="flex justify-between items-center">
       <div>
-        <h1 class="text-2xl font-bold text-gray-800">Budgets & Limits</h1>
+        <h6 class="text-2xl font-bold text-gray-800">Budgets & Limits</h6>
         <p class="text-sm text-gray-500 mt-1">Set monthly spending targets for your categories</p>
       </div>
       <button 
-        @click="isAdding = !isAdding"
-        class="flex items-center gap-2 px-5 py-2.5 bg-emerald-600 text-white font-bold rounded-xl hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-100"
+        @click="isAdding ? resetForm() : (isAdding = true)"
+        class="flex items-center gap-2 px-4 py-2 bg-emerald-400 text-white font-bold rounded-xl hover:bg-emerald-500 transition-all shadow-lg shadow-emerald-100"
       >
-        <component :is="isAdding ? MinusIcon : PlusCircleIcon" :size="20" />
+        <component :is="isAdding ? MinusCircleIcon : PlusCircleIcon" :size="20" />
         <span>{{ isAdding ? 'Cancel' : 'Set New Budget' }}</span>
       </button>
     </div>
 
-    <!-- Add Budget Form -->
+    <!-- Add/Edit Budget Form -->
     <div v-if="isAdding" class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm animate-in fade-in slide-in-from-top-4">
+      <h3 class="text-lg font-bold text-gray-800 mb-6">{{ editingId ? 'Update Existing Budget' : 'Create New Budget' }}</h3>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Select Category</label>
@@ -151,7 +175,7 @@ const formatCurrency = (amount: number) => {
           @click="handleAddBudget"
           class="px-8 py-3 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100"
         >
-          Activate Budget
+          {{ editingId ? 'Update Budget' : 'Activate Budget' }}
         </button>
       </div>
     </div>
@@ -173,12 +197,22 @@ const formatCurrency = (amount: number) => {
               <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Monthly Limit</p>
             </div>
           </div>
-          <button 
-            @click="() => { budgetToDelete = budget.id; isDeleteModalOpen = true }"
-            class="text-gray-300 hover:text-red-500 p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-          >
-            <Trash2Icon :size="16" />
-          </button>
+          <div class="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+            <button 
+              @click="handleEditClick(budget)"
+              class="text-gray-300 hover:text-indigo-500 p-1"
+              title="Edit Budget"
+            >
+              <PencilIcon :size="16" />
+            </button>
+            <button 
+              @click="() => { budgetToDelete = budget.id; isDeleteModalOpen = true }"
+              class="text-gray-300 hover:text-red-500 p-1"
+              title="Delete Budget"
+            >
+              <Trash2Icon :size="16" />
+            </button>
+          </div>
         </div>
 
         <div class="space-y-2">

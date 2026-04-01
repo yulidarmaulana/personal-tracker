@@ -2,16 +2,17 @@ name: Supabase Keep Alive
 
 on:
   schedule:
+    # Berjalan setiap 2 hari sekali pada jam 00:00 UTC
     - cron: '0 0 */2 * *'
-  workflow_dispatch:
+  workflow_dispatch: # Mengaktifkan tombol "Run workflow" di GitHub Actions UI
 
 jobs:
   ping_supabase:
     runs-on: ubuntu-latest
     steps:
       - name: Send keep-alive request
-        env:                                                        
-          SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}          
+        env:
+          SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
         run: |
           curl -X GET "$SUPABASE_URL/rest/v1/wallets?select=id&limit=1" \

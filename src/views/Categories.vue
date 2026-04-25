@@ -65,7 +65,7 @@ const cancelDelete = () => {
   <div class="p-6 mx-auto space-y-8">
     <div class="flex justify-between items-center">
       <div>
-        <h6 class="text-2xl font-bold text-gray-800">Category Management</h6>
+        <h6 class="text-2xl font-bold text-gray-800">Category</h6>
         <p class="text-sm text-gray-500 mt-1">Customize your income and expense categories</p>
       </div>
       <button 
@@ -73,7 +73,7 @@ const cancelDelete = () => {
         class="flex items-center gap-2 px-4 py-2 bg-emerald-400 text-white font-bold rounded-xl hover:bg-emerald-500 transition-all shadow-lg shadow-emerald-100"
       >
         <component :is="isAdding ? MinusCircleIcon : PlusCircleIcon" :size="20" />
-        <span>{{ isAdding ? 'Cancel' : 'New Category' }}</span>
+        <span class="hidden md:block">{{ isAdding ? 'Cancel' : 'New Category' }}</span>
       </button>
     </div>
 

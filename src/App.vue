@@ -11,7 +11,7 @@ import { ref, onMounted, computed } from 'vue'
     LogOutIcon,
     TagIcon,
     TargetIcon,
-    TrophyIcon
+    TrophyIcon,
   } from 'lucide-vue-next'
   import TransactionModal from '@/components/TransactionModal.vue'
   import NotificationToast from '@/components/NotificationToast.vue'
@@ -19,6 +19,7 @@ import { ref, onMounted, computed } from 'vue'
   import { useRouter, useRoute } from 'vue-router'
   import { useAuthStore } from '@/stores/authStore'
   import { useWalletStore } from '@/stores/walletStore'
+  import { useThemeStore } from '@/stores/themeStore'
 
   const isModalOpen = ref(false)
   const isCollapsed = ref(false)
@@ -26,6 +27,7 @@ import { ref, onMounted, computed } from 'vue'
   const route = useRoute()
   const authStore = useAuthStore()
   const walletStore = useWalletStore()
+  const themeStore = useThemeStore()
 
   const showNavigation = computed(() => !route.meta.public)
 
@@ -40,6 +42,9 @@ import { ref, onMounted, computed } from 'vue'
   ]
 
   onMounted(async () => {
+    // Sync Dark Mode
+    themeStore.initTheme()
+
     const { data: { session } } = await supabase.auth.getSession()
     if (!session) {
       await authStore.signInAnonymously()
@@ -59,12 +64,12 @@ import { ref, onMounted, computed } from 'vue'
 </script>
 
 <template>
-  <div class="flex flex-col md:flex-row h-screen bg-gray-100 overflow-hidden">
+  <div class="flex flex-col md:flex-row h-screen bg-gray-100 dark:bg-slate-950 overflow-hidden transition-colors duration-300">
     <!-- Sidebar for Desktop -->
     <aside 
       v-if="showNavigation"
       :class="[
-        'bg-white border-r border-gray-200 flex-col transition-all duration-300 ease-in-out relative hidden md:flex',
+        'bg-white dark:bg-slate-900 border-r border-gray-200 dark:border-slate-800 flex-col transition-all duration-300 ease-in-out relative hidden md:flex',
         isCollapsed ? 'w-20' : 'w-64'
       ]"
     >
@@ -83,7 +88,7 @@ import { ref, onMounted, computed } from 'vue'
           <div class="p-2 bg-emerald-500 rounded-lg text-white">
             <WalletIcon :size="20" />
           </div>
-          <h5 v-if="!isCollapsed" class="text-xl font-bold text-gray-800">Finc</h5>
+          <h5 v-if="!isCollapsed" class="text-xl font-bold text-gray-800 dark:text-gray-300">Finc</h5>
         </div>
       </div>
 
@@ -95,9 +100,9 @@ import { ref, onMounted, computed } from 'vue'
           :key="item.to"
           :to="item.to"
           :title="item.label"
-          active-class="bg-indigo-50 text-indigo-700 font-bold"
+          active-class="bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 font-bold"
           :class="[
-            'flex items-center text-sm rounded-xl transition-all duration-200 text-gray-500 hover:bg-indigo-100 hover:text-indigo-700',
+            'flex items-center text-sm rounded-xl transition-all duration-200 text-gray-500 dark:text-gray-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/20 hover:text-emerald-700 dark:hover:text-emerald-400',
             isCollapsed ? 'justify-center p-3' : 'px-4 py-3'
           ]"
         >
@@ -105,9 +110,9 @@ import { ref, onMounted, computed } from 'vue'
             :is="item.icon"
             :size="20"
             :class="!isCollapsed ? 'mr-3' : ''"
-            class="text-slate-900"
+            class="text-slate-900 dark:text-gray-300"
           />
-          <span v-if="!isCollapsed" class="text-slate-900 font-semibold">{{ item.label }}</span>
+          <span v-if="!isCollapsed" class="text-slate-900 dark:text-gray-300 font-semibold">{{ item.label }}</span>
         </router-link>
       </nav>
      
@@ -117,7 +122,7 @@ import { ref, onMounted, computed } from 'vue'
         <button 
           @click="isModalOpen = true"
           :class="[
-            'w-full flex items-center justify-center bg-emerald-400 text-white font-bold rounded-xl hover:bg-emerald-500 transition-all shadow-lg shadow-indigo-100 mb-6',
+            'w-full flex items-center justify-center bg-emerald-400 text-white font-bold rounded-xl hover:bg-emerald-500 transition-all shadow-sm shadow-indigo-100 mb-6 dark:shadow-indigo-900/20',
             isCollapsed ? 'p-3' : 'py-3 gap-2'
           ]"
           title="Add Transaction"
@@ -126,14 +131,16 @@ import { ref, onMounted, computed } from 'vue'
           <span v-if="!isCollapsed" class="text-sm">Add</span>
         </button>
 
+        
+
         <div :class="['flex items-center p-2', isCollapsed ? 'justify-center flex-col gap-4' : 'justify-between']">
           <div class="flex items-center">
-            <div class="w-8 h-8 rounded-lg bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold text-xs">
+            <div class="w-8 h-8 rounded-lg bg-indigo-100 dark:bg-indigo-900/50 flex items-center justify-center text-indigo-600 dark:text-indigo-400 font-bold text-xs">
               Y
             </div>
             <div v-if="!isCollapsed" class="ml-3 text-sm">
-              <p class="font-bold text-gray-700 truncate w-24">{{ authStore.user?.email }}</p>
-              <p class="text-[10px] text-gray-400 font-medium uppercase font-bold tracking-tighter">Budget Pro</p>
+              <p class="font-bold text-gray-700 dark:text-gray-300 truncate w-24">{{ authStore.user?.email }}</p>
+              <!-- <p class="text-[10px] text-gray-400 font-medium uppercase font-bold tracking-tighter">Budget Pro</p> -->
             </div>
           </div>
           <button 
@@ -159,43 +166,43 @@ import { ref, onMounted, computed } from 'vue'
     </main>
 
     <!-- Bottom Navigation for Mobile -->
-    <div v-if="showNavigation" class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-6 py-2 flex items-center justify-between z-40">
-      <router-link to="/" active-class="text-indigo-600" class="flex flex-col items-center gap-1 text-gray-400">
-        <HomeIcon :size="24" />
-        <span class="text-[10px] font-medium">Home</span>
+    <div v-if="showNavigation" class="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-900 border-t border-gray-200 dark:border-slate-800 px-6 py-2 flex items-center justify-between z-40">
+      <router-link to="/" active-class="bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 font-bold router-link-exact-active flex items-center text-sm rounded-xl transition-all duration-200 text-gray-500 dark:text-gray-400 hover:bg-indigo-100 dark:hover:bg-indigo-900/20 hover:text-indigo-700 dark:hover:text-indigo-400 justify-center p-2" 
+      class="flex flex-col items-center gap-1 text-gray-400 dark:text-gray-500">
+        <LayoutGridIcon :size="24" class="text-slate-900" />
+        <!-- <span class="text-[10px] font-medium">Home</span> -->
       </router-link>
-      <router-link to="/wallet" active-class="text-indigo-600" class="flex flex-col items-center gap-1 text-gray-400">
+    
+      <router-link to="/wallet" active-class="text-indigo-600 dark:text-indigo-400" class="flex flex-col items-center gap-1 text-gray-400 dark:text-gray-500">
         <WalletIcon :size="24" />
-        <span class="text-[10px] font-medium">Wallet</span>
+      </router-link>
+
+      <router-link to="/transactions" active-class="text-indigo-600 dark:text-indigo-400" class="flex flex-col items-center gap-1 text-gray-400 dark:text-gray-500">
+        <ListIcon :size="24" />
       </router-link>
 
       <!-- Floating Action Button -->
       <button 
         @click="isModalOpen = true"
-        class="bg-emerald-400 text-white p-4 rounded-full shadow-lg shadow-emerald-200 -mt-10 border-4 border-gray-100 active:scale-95 transition-transform"
+        class="bg-emerald-400 text-white p-4 rounded-full shadow-lg shadow-emerald-200 dark:shadow-emerald-900/20 -mt-5 border-4 border-gray-100 dark:border-slate-900 active:scale-95 transition-transform"
       >
         <PlusIcon :size="24" />
       </button>
-
-      <router-link to="/transactions" active-class="text-indigo-600" class="flex flex-col items-center gap-1 text-gray-400">
-        <ListIcon :size="24" />
-        <span class="text-[10px] font-medium">History</span>
-      </router-link>
-      <router-link to="/categories" active-class="text-indigo-600" class="flex flex-col items-center gap-1 text-gray-400">
+    
+      <router-link to="/categories" active-class="text-indigo-600 dark:text-indigo-400" class="flex flex-col items-center gap-1 text-gray-400 dark:text-gray-500">
         <TagIcon :size="24" />
-        <span class="text-[10px] font-medium">Tags</span>
       </router-link>
-      <router-link to="/budgets" active-class="text-indigo-600" class="flex flex-col items-center gap-1 text-gray-400">
+
+      <router-link to="/budgets" active-class="text-indigo-600 dark:text-indigo-400" class="flex flex-col items-center gap-1 text-gray-400 dark:text-gray-500">
         <TargetIcon :size="24" />
-        <span class="text-[10px] font-medium">Budgets</span>
       </router-link>
-      <router-link to="/goals" active-class="text-indigo-600" class="flex flex-col items-center gap-1 text-gray-400">
+
+      <router-link to="/goals" active-class="text-indigo-600 dark:text-indigo-400" class="flex flex-col items-center gap-1 text-gray-400 dark:text-gray-500">
         <TrophyIcon :size="24" />
-        <span class="text-[10px] font-medium">Goals</span>
       </router-link>
-      <router-link to="/report" active-class="text-indigo-600" class="flex flex-col items-center gap-1 text-gray-400">
+    
+      <router-link to="/report" active-class="text-indigo-600 dark:text-indigo-400" class="flex flex-col items-center gap-1 text-gray-400 dark:text-gray-500">
         <ChartLineIcon :size="24" />
-        <span class="text-[10px] font-medium">Report</span>
       </router-link>
     </div>
 

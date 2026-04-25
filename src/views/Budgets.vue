@@ -15,6 +15,7 @@ import {
   MinusCircleIcon
 } from 'lucide-vue-next'
 import ConfirmModal from '@/components/ConfirmModal.vue'
+import { formatCurrency } from '@/utils/format'
 
 const budgetStore = useBudgetStore()
 const categoryStore = useCategoryStore()
@@ -116,13 +117,6 @@ const cancelDelete = () => {
   isDeleteModalOpen.value = false
   budgetToDelete.value = null
 }
-
-const formatCurrency = (amount: number) => {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-  }).format(amount)
-}
 </script>
 
 <template>
@@ -137,7 +131,7 @@ const formatCurrency = (amount: number) => {
         class="flex items-center gap-2 px-4 py-2 bg-emerald-400 text-white font-bold rounded-xl hover:bg-emerald-500 transition-all shadow-lg shadow-emerald-100"
       >
         <component :is="isAdding ? MinusCircleIcon : PlusCircleIcon" :size="20" />
-        <span>{{ isAdding ? 'Cancel' : 'Set New Budget' }}</span>
+        <span class="hidden md:block">{{ isAdding ? 'Cancel' : 'Set New Budget' }}</span>
       </button>
     </div>
 
@@ -160,12 +154,12 @@ const formatCurrency = (amount: number) => {
         <div>
           <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Monthly Limit</label>
           <div class="relative">
-            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium">$</span>
+            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium">Rp</span>
             <input 
               v-model.number="newBudgetAmount"
               type="number" 
               placeholder="0.00"
-              class="w-full pl-8 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
+              class="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
             />
           </div>
         </div>

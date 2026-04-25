@@ -6,6 +6,7 @@ import { useCategoryStore } from '@/stores/categoryStore'
 import type { Transaction } from '@/types/transaction'
 import TransactionModal from '@/components/TransactionModal.vue'
 import ConfirmModal from '@/components/ConfirmModal.vue'
+import { formatCurrency } from '@/utils/format'
 
 const store = useTransactionStore()
 const authStore = useAuthStore()
@@ -33,13 +34,6 @@ const selectedTransaction = ref<Transaction | null>(null)
 const selectedCategory = ref<string | 'All'>('All')
 const startDate = ref('')
 const endDate = ref('')
-
-const formatCurrency = (amount: number) => {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-  }).format(amount)
-}
 
 const formatDate = (dateStr: string) => {
   const date = new Date(dateStr)

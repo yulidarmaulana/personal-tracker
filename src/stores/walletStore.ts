@@ -2,14 +2,7 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { supabase } from '@/api/supabase'
 import { useNotificationStore } from './notificationStore'
-
-export interface Wallet {
-  id: string
-  name: string
-  balance: number
-  icon?: string
-  color?: string
-}
+import type { Wallet } from '@/types/wallet'
 
 export const useWalletStore = defineStore('wallets', () => {
   const wallets = ref<Wallet[]>([])

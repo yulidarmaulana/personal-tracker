@@ -3,10 +3,14 @@ import { onMounted, watch, computed } from 'vue'
 import { useTransactionStore } from '@/stores/transactionStore'
 import { useWalletStore } from '@/stores/walletStore'
 import { useAuthStore } from '@/stores/authStore'
+import { useThemeStore } from '@/stores/themeStore'
+import { formatCurrency } from '@/utils/format'
+import { SunIcon, MoonIcon } from 'lucide-vue-next'
 
 const store = useTransactionStore()
 const walletStore = useWalletStore()
 const authStore = useAuthStore()
+const themeStore = useThemeStore()
 
 onMounted(() => {
   if (authStore.user) {
@@ -39,38 +43,41 @@ const userName = computed(() => {
   if (!namePart) return 'User'
   return namePart.charAt(0).toUpperCase() + namePart.slice(1)
 })
-
-
-// Helper untuk format mata uang
-const formatCurrency = (amount: number) => {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-  }).format(amount)
-}
 </script>
 
 <template>
   <div class="p-6">
-    <div class="mb-8">
-      <!-- <h6 class="text-2xl font-bold mb-2 text-gray-800">Overview</h6> -->
-      <!-- <p class="text-sm font-medium text-indigo-600 mb-1">{{ formattedDate }}</p> -->
-      <h6 class="text-2xl font-bold text-gray-900">{{ greeting }}, {{ userName }}!</h6>
-      <p class="text-gray-500 text-sm mt-1">Here's what's happening with your finances today.</p>
+    <div class="mb-8 flex items-center justify-between">
+      <div>
+        <h6 class="text-2xl font-bold text-gray-900 dark:text-slate-50">{{ greeting }}, {{ userName }}!</h6>
+        <p class="text-gray-500 text-sm mt-1">Here's what's happening with your finances today.</p>
+      </div>
+
+      <!-- Dark Mode Toggle -->
+      <button 
+        @click="themeStore.toggleDarkMode"
+        class="p-3 bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-700 rounded-2xl text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-slate-700 transition-all shadow-sm group"
+        :title="themeStore.isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'"
+      >
+        <div class="relative w-6 h-6 flex items-center justify-center">
+          <SunIcon v-if="themeStore.isDarkMode" :size="20" class="text-amber-500 animate-in zoom-in spin-in-90 duration-300" />
+          <MoonIcon v-else :size="20" class="text-indigo-400 animate-in zoom-in spin-in-90 duration-300" />
+        </div>
+      </button>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+      <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
         <p class="text-sm text-gray-500 mb-1">Total Balance</p>
-        <p class="text-2xl font-bold text-blue-600">{{ formatCurrency(walletStore.totalBalance) }}</p>
+        <p class="text-2xl font-bold text-slate-900">{{ formatCurrency(walletStore.totalBalance) }}</p>
       </div>
-      <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+      <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
         <p class="text-sm text-gray-500 mb-1">Income</p>
-        <p class="text-2xl font-bold text-green-600">{{ formatCurrency(store.totalIncome) }}</p>
+        <p class="text-2xl font-bold text-slate-900">{{ formatCurrency(store.totalIncome) }}</p>
       </div>
-      <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+      <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
         <p class="text-sm text-gray-500 mb-1">Expenses</p>
-        <p class="text-2xl font-bold text-red-600">{{ formatCurrency(store.totalExpense) }}</p>
+        <p class="text-2xl font-bold text-slate-900">{{ formatCurrency(store.totalExpense) }}</p>
       </div>
     </div>
   </div>
@@ -82,4 +89,3 @@ svg {
   filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.05));
 }
 </style>
-

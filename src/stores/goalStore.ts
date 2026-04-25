@@ -1,15 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { supabase } from '@/api/supabase'
-
-export interface Goal {
-  id: string
-  name: string
-  target_amount: number
-  current_amount: number
-  deadline: string | null
-  user_id: string
-}
+import type { Goal } from '@/types/goal'
 
 export const useGoalStore = defineStore('goals', () => {
   const goals = ref<Goal[]>([])
